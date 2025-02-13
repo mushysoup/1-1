@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation with Pixelated Text & Hearts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .animation-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .animation-container img {
+            max-width: 100%;
+            max-height: 60vh;
+        }
+
+        .textbox {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            font-size: 18px;
+            font-family: 'Press Start 2P', cursive;
+            border-top: 2px solid white;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            text-align: center;
+            min-height: 100px;
+            cursor: pointer;
+            white-space: pre-line;
+        }
+
+        .heart {
+            position: absolute;
+            color: red;
+            font-size: 30px;
+            animation: float 8s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(var(--x-move), var(--y-move)) scale(1.5);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(var(--x-move-final), var(--y-move-final)) scale(0.8);
+                opacity: 1; /* Keeps hearts visible */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="animation-container">
+        <img src="pixel-cat.gif" alt="Animation">
+    </div>
+
+    <div class="textbox" id="textbox">Loading...</div>
+
+    <script>
+        const dialogue = [
+            "hai baobao! happy valentines day!",
+            "i know you said you guys don't really celebrate this in china, but i still wanted to do something",
+            "i don't want to say too much, you already know how dear you are to me.",
+            "You're the best, Yi Jia Yi!",
+            "i love you ! happy valentine's day <3"
+        ];
+
+        let dialogueIndex = 0;
+        let charIndex = 0;
+        let isTyping = false;
+        const textbox = document.getElementById("textbox");
+
+        function typeText() {
+            if (charIndex < dialogue[dialogueIndex].length) {
+                textbox.innerText = dialogue[dialogueIndex].substring(0, charIndex + 1);
+                charIndex++;
+                setTimeout(typeText, 50);
+            } else {
+                isTyping = false;
+                dialogueIndex++; 
+                if (dialogueIndex === dialogue.length) {
+                    setTimeout(explodeWithHearts, 500);
+                }
+            }
+        }
+
+        function nextDialogue() {
+            if (isTyping) return;
+
+            if (dialogueIndex < dialogue.length) {
+                textbox.innerText = "";
+                charIndex = 0;
+                isTyping = true;
+                typeText();
+            }
+        }
+
+        function explodeWithHearts() {
+            for (let i = 0; i < 50; i++) {
+                let heart = document.createElement("div");
+                heart.classList.add("heart");
+                heart.innerHTML = "❤️";
+                document.body.appendChild(heart);
+
+                let x = Math.random() * window.innerWidth;
+                let y = Math.random() * window.innerHeight;
+
+                let xMove = (Math.random() - 0.5) * 400; // Explosion effect
+                let yMove = (Math.random() - 0.5) * 400;
+
+                let xMoveFinal = (Math.random() - 0.5) * 800; // Bigger final movement
+                let yMoveFinal = -Math.random() * 500 - 100; // Move up
+
+                heart.style.left = `${x}px`;
+                heart.style.top = `${y}px`;
+
+                // Custom properties for explosion movement
+                heart.style.setProperty("--x-move", `${xMove}px`);
+                heart.style.setProperty("--y-move", `${yMove}px`);
+                heart.style.setProperty("--x-move-final", `${xMoveFinal}px`);
+                heart.style.setProperty("--y-move-final", `${yMoveFinal}px`);
+
+                heart.style.animationDuration = `${5 + Math.random() * 5}s`; // Random speed
+            }
+
+            // Keep generating floating hearts infinitely
+            setInterval(() => {
+                let heart = document.createElement("div");
+                heart.classList.add("heart");
+                heart.innerHTML = "❤️";
+                document.body.appendChild(heart);
+
+                let x = Math.random() * window.innerWidth;
+                heart.style.left = `${x}px`;
+                heart.style.top = "100vh"; // Start from bottom
+                heart.style.animationDuration = `${8 + Math.random() * 5}s`; // Longer floating
+            }, 300); // Keep creating hearts forever
+        }
+
+        window.onload = function () {
+            setTimeout(() => {
+                const isYiJiaYi = confirm("Are you 易佳怡?");
+                
+                if (isYiJiaYi) {
+                    textbox.innerText = "Click to start...";
+                    textbox.addEventListener("click", nextDialogue);
+                    document.addEventListener("keydown", nextDialogue);
+                } else {
+                    alert("You're stupid. The website is not for you.");
+                    textbox.innerText = "You're stupid. The website is not for you.";
+                    textbox.style.color = "red";
+                    textbox.style.fontSize = "25px";
+                    textbox.style.textTransform = "uppercase";
+                }
+            }, 100);
+        };
+    </script>
+
+</body>
+</html>
