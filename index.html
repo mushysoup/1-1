@@ -72,12 +72,18 @@
             }
             100% {
                 transform: translate(var(--x-move-final), var(--y-move-final)) scale(0.8);
-                opacity: 1; /* Keeps hearts visible */
+                opacity: 1; 
             }
         }
     </style>
 </head>
 <body>
+
+    <!-- Background music -->
+    <audio id="bg-music" loop>
+        <source src="till_heartbeat.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <div class="animation-container">
         <img src="pixel-cat.gif" alt="Animation">
@@ -98,6 +104,7 @@
         let charIndex = 0;
         let isTyping = false;
         const textbox = document.getElementById("textbox");
+        const bgMusic = document.getElementById("bg-music");
 
         function typeText() {
             if (charIndex < dialogue[dialogueIndex].length) {
@@ -134,25 +141,23 @@
                 let x = Math.random() * window.innerWidth;
                 let y = Math.random() * window.innerHeight;
 
-                let xMove = (Math.random() - 0.5) * 400; // Explosion effect
+                let xMove = (Math.random() - 0.5) * 400; 
                 let yMove = (Math.random() - 0.5) * 400;
 
-                let xMoveFinal = (Math.random() - 0.5) * 800; // Bigger final movement
-                let yMoveFinal = -Math.random() * 500 - 100; // Move up
+                let xMoveFinal = (Math.random() - 0.5) * 800; 
+                let yMoveFinal = -Math.random() * 500 - 100; 
 
                 heart.style.left = `${x}px`;
                 heart.style.top = `${y}px`;
 
-                // Custom properties for explosion movement
                 heart.style.setProperty("--x-move", `${xMove}px`);
                 heart.style.setProperty("--y-move", `${yMove}px`);
                 heart.style.setProperty("--x-move-final", `${xMoveFinal}px`);
                 heart.style.setProperty("--y-move-final", `${yMoveFinal}px`);
 
-                heart.style.animationDuration = `${5 + Math.random() * 5}s`; // Random speed
+                heart.style.animationDuration = `${5 + Math.random() * 5}s`; 
             }
 
-            // Keep generating floating hearts infinitely
             setInterval(() => {
                 let heart = document.createElement("div");
                 heart.classList.add("heart");
@@ -161,19 +166,25 @@
 
                 let x = Math.random() * window.innerWidth;
                 heart.style.left = `${x}px`;
-                heart.style.top = "100vh"; // Start from bottom
-                heart.style.animationDuration = `${8 + Math.random() * 5}s`; // Longer floating
-            }, 300); // Keep creating hearts forever
+                heart.style.top = "100vh";
+                heart.style.animationDuration = `${8 + Math.random() * 5}s`; 
+            }, 300); 
         }
 
         window.onload = function () {
             setTimeout(() => {
-                const isYiJiaYi = confirm("Are you 易佳怡?");
-                
+                const isYiJiaYi = confirm("你又回来了 宝贝");
+
                 if (isYiJiaYi) {
                     textbox.innerText = "Click to start...";
-                    textbox.addEventListener("click", nextDialogue);
-                    document.addEventListener("keydown", nextDialogue);
+                    textbox.addEventListener("click", () => {
+                        nextDialogue();
+                        bgMusic.play();
+                    });
+                    document.addEventListener("keydown", () => {
+                        nextDialogue();
+                        bgMusic.play();
+                    });
                 } else {
                     alert("笨笨哒. The website is not for you.");
                     textbox.innerText = "The website is not for you.";
